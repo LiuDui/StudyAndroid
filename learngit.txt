@@ -181,9 +181,146 @@ git branch
 * dev
   master
 
-当前在dev分支上，修改当前文件，并提交
+当前在dev分支上，修改当前文件，并提交，提交后切换到master分支
+git checkout master
+查看文件，发现当前文件并未修改，将已经修改的dev分支，合并到当前分支：
+get merge dev
 
+[aurora@localhost GItRepertory]$ git merge dev
+更新 a7a1d73..24f127f
+Fast-forward
+ learngit.txt | 37 ++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 36 insertions(+), 1 deletion(-)
 
+Fast-forward表示，这次合并是“快进合并”，就是直接把master指向dev的当前提交，所以合并速度非常快
+
+合并完成后，可以删除dev分支：
+[aurora@localhost GItRepertory]$ git branch -d dev
+已删除分支 dev（曾为 24f127f）。
+[aurora@localhost GItRepertory]$ git branch
+* master
+
+总结：
+Git鼓励大量使用分支：
+查看分支：git branch
+创建分支：git branch <name>
+切换分支：git checkout <name>
+创建+切换分支：git checkout -b <name>
+合并某分支到当前分支：git merge <name>
+删除分支：git branch -d <name>
+
+---------------------------------------
+解决冲突
+冲突产生的一种情况就是，A创建一个分支brancha，B创建一个分支branchb，A和B同时对文件X进行了修改。
+[aurora@localhost GItRepertory]$ touch confict
+[aurora@localhost GItRepertory]$ git add confict
+[aurora@localhost GItRepertory]$ git commit -m "add one file named confict"
+[master 421e94e] add one file named confict
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 confict
+[aurora@localhost GItRepertory]$ git checkout -b A
+切换到一个新分支 'A'
+[aurora@localhost GItRepertory]$ git checkout -b B
+切换到一个新分支 'B'
+[aurora@localhost GItRepertory]$ git checkout A
+M	confict
+切换到分支 'A'
+[aurora@localhost GItRepertory]$ echo 'Something in true A' > confict 
+[aurora@localhost GItRepertory]$ git add confict
+[aurora@localhost GItRepertory]$ git commit -m "modify confict"
+[A 2456b95] modify confict
+ 1 file changed, 1 insertion(+)
+[aurora@localhost GItRepertory]$ git checkout B
+切换到分支 'B'
+[aurora@localhost GItRepertory]$ echo 'Something in  B' > confict 
+[aurora@localhost GItRepertory]$ git add confict
+[aurora@localhost GItRepertory]$ git commit "modify confict"
+error: pathspec 'modify confict' did not match any file(s) known to git.
+[aurora@localhost GItRepertory]$ git commit "modify file"
+error: pathspec 'modify file' did not match any file(s) known to git.
+[aurora@localhost GItRepertory]$ git commit -m "modify confict"
+[B d24eaec] modify confict
+ 1 file changed, 1 insertion(+)
+[aurora@localhost GItRepertory]$ git status
+# 位于分支 B
+无文件要提交，干净的工作区
+[aurora@localhost GItRepertory]$ cat confict 
+Something in  B
+[aurora@localhost GItRepertory]$ git checkout A
+切换到分支 'A'
+[aurora@localhost GItRepertory]$ cat confict 
+Something in true A
+[aurora@localhost GItRepertory]$ git merge B
+自动合并 confict
+冲突（内容）：合并冲突于 confict
+自动合并失败，修正冲突然后提交修正的结果。
+[aurora@localhost GItRepertory]$ git status
+# 位于分支 A
+# 您有尚未合并的路径。
+#   （解决冲突并运行 "git commit"）
+#
+# 未合并的路径：
+#   （使用 "git add <file>..." 标记解决方案）
+#
+#	双方修改：     confict
+#
+修改尚未加入提交（使用 "git add" 和/或 "git commit -a"）
+[aurora@localhost GItRepertory]$ vim confict 
+[aurora@localhost GItRepertory]$ git add confict
+[aurora@localhost GItRepertory]$ git commit -m "confict fixed"
+[A 39cae63] confict fixed
+[aurora@localhost GItRepertory]$ git log --graph --pretty=oneline --abbrev-commit
+*   39cae63 confict fixed
+|\  
+| * d24eaec modify confict
+* | 2456b95 modify confict
+|/  
+* 421e94e add one file named confict
+* 24f127f modify learngit.txt
+*   a7a1d73 Merge remote-tracking branch 'origin/master'
+|\  
+| * 90d1680 Delete README.md
+| * e0ac0cd Initial commit
+* 6f21570 del
+* 5a7de58 modify learngit
+* b181eeb 新增文件用于github测试
+* 0d649f3 add two file
+[aurora@localhost GItRepertory]$ git checkout master
+切换到分支 'master'
+您的分支领先 'origin/master' 共 2 个提交。
+  （使用 "git push" 来发布您的本地提交）
+[aurora@localhost GItRepertory]$ git merge A
+更新 421e94e..39cae63
+Fast-forward
+ confict | 2 ++
+ 1 file changed, 2 insertions(+)
+[aurora@localhost GItRepertory]$ git branch -d A,B 
+error: 分支 'A,B' 未发现。
+[aurora@localhost GItRepertory]$ git branch -d A
+已删除分支 A（曾为 39cae63）。
+[aurora@localhost GItRepertory]$ git branch -d B
+已删除分支 B（曾为 d24eaec）。
+[aurora@localhost GItRepertory]$ git log --graph --pretty=oneline --abbrev-commit
+*   39cae63 confict fixed
+|\  
+| * d24eaec modify confict
+* | 2456b95 modify confict
+|/  
+* 421e94e add one file named confict
+* 24f127f modify learngit.txt
+*   a7a1d73 Merge remote-tracking branch 'origin/master'
+|\  
+| * 90d1680 Delete README.md
+| * e0ac0cd Initial commit
+* 6f21570 del
+* 5a7de58 modify learngit
+* b181eeb 新增文件用于github测试
+* 0d649f3 add two file
+[aurora@localhost GItRepertory]$ 
+
+手动解决冲突问题
+
+--------------------------------
 
 
 
