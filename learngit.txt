@@ -1,0 +1,154 @@
+git初始化：
+（1）创建一个文件夹
+（2）在该文件夹下，打开bash
+（3）使用git init 命令初始化为一个仓库
+
+git使用步骤：
+（1）在仓库中创建文件
+（2）使用
+     $ git add learngit.txt
+（3）没有任何显示就正确。（Unix哲学：没有消息就是好消息）
+（4）使用
+    $ git commit -m "说明"
+    提交到仓库，git commit命令， -m 后面输入的是本次提交说明，可以输入任何内容，最好是
+    有意义的，这样就可以从历史记录中方便的找到改动记录。
+
+git commit可以一次性提交很多文件，例如：
+
+$ git add one.txt two.txt
+$ git commit -m "add 3 files"
+[master 2cf8f57] add 3 files
+ 2 files changed, 1 insertion(+)
+ create mode 100644 one.txt
+ create mode 100644 two.txt
+
+ 文件被修改后，并sava到本地磁盘后，git可以知道文件的更改，使用
+ $ git status
+ 获取文件的更改，例如
+
+ $ git status
+On branch master
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+        modified:   learngit.txt
+        modified:   one.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+再通过diff命令查看更改：
+
+$ git diff
+diff --git a/learngit.txt b/learngit.txt
+index 09e60a1..b1355e8 100644
+--- a/learngit.txt
++++ b/learngit.txt
+@@ -1,3 +1,23 @@
++git初始化：
++（1）创建一个文件夹
++（2）在该文件夹下，打开bash
++（3）使用git init 命令初始化为一个仓库
++
++git使用步骤：
+（1）在仓库中创建文件
+（2）使用
+     $ git add learngit.txt
++（3）没有任何显示就正确。（Unix哲学：没有消息就是好消息）
++（4）使用
++    $ git commit -m "说明"
++    提交到仓库，git commit命令， -m 后面输入的是本次提交说明，可以输入任何内容
+，最好是
++    有意义的，这样就可以从历史记录中方便的找到改动记录。
++
++git commit可以一次性提交很多文件，例如：
++
++$ git add one.txt two.txt
++$ git commit -m "add 3 files"
++[master 2cf8f57] add 3 files
++ 2 files changed, 1 insertion(+)
++ create mode 100644 one.txt
++ create mode 100644 two.txt
+diff --git a/one.txt b/one.txt
+index 1b6ad6c..f7745e3 100644
+--- a/one.txt
++++ b/one.txt
+@@ -1 +1 @@
+-
++add letter in one
+
+查看更改后，若文件没有问题，就使用
+$ git add
+$ git commit
+进行提交
+
+版本回退：
+（1）回退到当前head的之前的版本
+git reset --hard HEAD^
+（2）回退到某个历史版本
+git reset --hard commit_id
+（3）回退之后，后悔
+git reflog 取得版本号
+git reset --hard commit_id
+
+工作区和暂存区：
+（1）工作区：电脑中能看到的目录，例如当前文件夹就是一个工作区
+（2）版本库及暂存区：工作区有一个隐藏目录.git，是Git的版本库，其中存了很多东西，最重要的就是称为stage（或者叫index）的暂存区，还有Git自动创建的第一个分支master，以及指向,master的一个指针叫HEAD
+
+将文件添加入Git版本库中的过程：
+（1）第一步git add把文件添加进去，实际是把文件修改添加到暂存区；
+（2）第二部git commit提交更改，实际上就是把暂存区的所有内容提交到当前分支。
+
+因为在创建Git版本库时，Git会自动创建唯一的一个master分支，所以，git commit就是往master分支上提交更改，可以理解为：需要提交的文件修改统统放到暂存区，一次性提交暂存区的所有修改。
+所以在commit后，暂存区是空的。
+
+
+管理修改
+
+Git相比其他版本控制系统设计的优秀，因为Git跟踪的并管理的是 修改 而非 文件。
+Git管理的是修改，当用git add命令后，在工作区的修改会被放入暂存区，准备提交，所以commit只针对暂存区存放的修改
+
+git add可以累计修改，也就是一个文件 修改 add 修改 add ... 最后commit
+
+------------------------
+
+撤销修改
+
+（1）在工作区对文件进行了更改，可以使用
+git checkout -- file_name
+撤销更改，该命令的意思是，把file.name的意思就是，将file_name在工作区的修改全部撤销，有两种情况：
+一种是file_name自修改后还没有被放到暂存区，现在，撤销修改就回到和版本库中一模一样的状态；
+一种是file_name已经添加到暂存区，又做了修改，现在，撤销修改就是回到添加到暂存区后的状态；
+总之，就是让文件回到最近一次git commit或git add时的状态
+
+该命令中 --参数很重要，若没有该参数，就变成了"切换到另一个分支"的命令
+
+（2）已经提交到了暂存区，可以使用
+git reset HEAD <file_name>
+将暂存区的修改回退到工作区，当用HEAD参数时，表示最新版本，此时状态变为暂存区空了，但工作区有修改，可以使用上面的方法在撤销工作区的修改
+
+
+总结：
+（1）当改乱了工作区某文件的内容，想直接丢弃修改，用命令git checkout -- file
+（2）当改乱了工作区某个文件的内容，还添加到了暂存区，想丢弃修改，分两步，第一步用命令git reset HEAD <file_name>，第二步用（1）
+（3）已经提交到本地版本库，但没有推送到远程库时，想撤销修改，使用版本回退 
+
+-------------------
+删除文件
+一般情况下，通常直接在文加管理器中把没用的文件删了 rm <file_name>
+git可以知道文件被删除了，git status就会立即知道哪些文件被删除了，此时有两个选择
+（1）确实言删除该文件，就用命令git rm <file_name>删除，然后git commit提交（如果先手动删除文件，使用git add 和 git rm效果是一样的）
+（2）删除错了，可以将版本库中的文件恢复过来，git checkout -- <file_name>，checkout其实使用版本库里面的版本题画年工作区的版本，无论工作区被修改还是删除，都可以还原
+
+-------------------
+远程仓库
+因为git是分布是版本控制，可以自己搭建一个git服务器，或者直接用github免费仓库
+github使用ssh协议，使用github的方法是：
+（1）创建SSH Key:先看在用户主目录下的.ssh下面有没有存在id_rsa和id_rsa.pub，有的话就下一步，没有的话就用下面的命令/home/aurora/.ssh $ ssh-keygen -t rsa -C "youremail@example.com"
+id_rsa是私钥，不能泄露，id_rsa.pub是公钥，可以对外公开。
+（2）登陆github账户，setting -> sshkey -> add -> 在key上粘贴id_rsa.pub文件的内容
+
+
+------------------------------
+添加远程库
+
