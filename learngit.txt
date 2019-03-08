@@ -150,5 +150,40 @@ id_rsa是私钥，不能泄露，id_rsa.pub是公钥，可以对外公开。
 
 
 ------------------------------
-添加远程库
+添加远程库（在github上）
+（1）在github上创建仓库
+（2）关联：git remote add origin git@github.com:LiuDui/GItRepertory.git
+添加后origin就是远程库的名字，也是git默认的叫法，可以改成别的
+（3）推送：git push -u origin master
+把本地库的内容推送到远程，用git push命令，实际上是把当前分支master推送到远程
+下次提交直接 git push origin master
+
+----------------------------
+从远程库克隆
+
+git clone git@github.com:LiuDui/ComputerSystemStudy.git
+
+----------------------------------------分支管理
+---------------------------
+创建与合并分支
+HEAD指针指向matser，master指向时间线上的节点，创建分支就是再创建一个指针，指向master，切换分支，就是让HEAD指向新的指针，所以创建和合并很快
+
+创建并切换分支dev：
+git checkout -b dev
+-b参数表示创建并切换，相当于
+git branch dev
+git checkout dev
+
+查看分支：
+git branch
+会列出所有分支，当前分支前面会标一个*号
+[aurora@localhost GItRepertory]$ git branch
+* dev
+  master
+
+当前在dev分支上，修改当前文件，并提交
+
+
+
+
 
