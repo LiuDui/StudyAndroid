@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!-- 根元素默认是LinearLayout -->
+    <Button
+        android:id="@+id/button_linear_layout_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="button"
+        android:textColor="#0000ff"
+        android:textAllCaps="false"
+        />
+    <!--禁用自动转换成大写字母 -->
+
+
+    <Button
+        android:id="@+id/button_linear_layout_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="button"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/button_linear_layout_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="button"
+        android:textAllCaps="false"/>
+
+    <Button
+        android:id="@+id/button_linear_layout_4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="button"
+        android:textAllCaps="false" />
+
+</LinearLayout>
