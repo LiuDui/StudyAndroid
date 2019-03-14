@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
 （广播其实就是给个action，通过这个action来区别的，就像每个消息有个key，上面的"android.net.conn.CONNECTIVITY_CHANGE"就是一种key，所以自定义就是自定义一个action的key）
 
 #### 发送标准广播
-> **创建方式 **
+> **创建方式**
 > 1. 先创建一个接受者，无论动态还是静态，都一定会有
 ```
 IntentFilter.addAction()
@@ -110,4 +110,35 @@ intent.setComponent(new ComponentName("com.example.broadcaststudy",
 
 
 # 三、Providers
+> 跨程序共享数据。提供了完整机制，允许一个程序访问另一个程序中的数据，同时还能保证数据的安全性。
+
+> 与SharedPreferences相比:不同于SPf中的两种全局可读可写操作模式，内容提供器可以选择对哪一部分数据进行共享，从而保证隐私数据不会泄露
+
+### 运行时权限
+在Androidmanifest中加入<user-permission/>后，低于Android 6.0的手机在安装时，会提示相关权限申请，拒绝则不安装，不决绝则安装，所以存在滥用权限的情况。
+
+Android 6.0之后加入运行时权限，在运行过程中申请，拒绝也不会影响其他功能的使用。
+
+Android将所有权限分为两类：
+* 普通权限：不会直接威胁到用户的安全和隐私的权限，系统会自动进行授权
+* 危险权限：可能会触及用户隐私或者对设备安全性造成影响的权限，如获取联系人信息，定位设备的地理位置等，这部分必须由用户自己手动点击授权才可以。
+
+危险权限：
+
+权限组名 | 权限名
+------------ | -------------
+CaLENDAR|READ_CALENDAR 、WRITE_CALENDAR
+CAMEAR | CAMERA
+CONTACTS |READ_CONTECTS 、WRITE_CONTACTS
+...|...
+(用到时，查表)在进行权限处理时，使用的是权限名，但是用户一旦同意授权了，那么该权限所对应的权限组中所有的其他权限也会同时被授权。
+
+
+
+
+
+
+
+
+
 # 四、Service
