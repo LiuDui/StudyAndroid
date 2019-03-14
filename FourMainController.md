@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 ```
 #### 静态注册实现开机启动
->**创建方式：**
+>**创建方式**：
 >1. new -> other -> BroadcastReceiver
 >2. 重写onReceive
 >3. 在AndroidManifest.xml中<receiver>标签中注册
