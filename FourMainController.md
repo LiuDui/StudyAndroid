@@ -131,14 +131,217 @@ CaLENDAR|READ_CALENDAR 、WRITE_CALENDAR
 CAMEAR | CAMERA
 CONTACTS |READ_CONTECTS 、WRITE_CONTACTS
 ...|...
+
 (用到时，查表)在进行权限处理时，使用的是权限名，但是用户一旦同意授权了，那么该权限所对应的权限组中所有的其他权限也会同时被授权。
 
+#### 运行时申请权限
+还是通过Intent，所以总体来说，在活动或者界面之间穿来穿去，都可以用intent:
+* 活动之间切换用显式intent
+* broadcast也是活动之间或者进程之间通信，也必须用IntentFilter去作为接收的参数，发送广播也要用send(intent)
+
+Intent里面比较重要的就是构造函数中的Action参数，指定传输的目的地！Intent还可以当做数据容器传递数据。
+
+### 访问其他程序中的数据
+> 使用方法有两种：
+* 使用现有的内容提供器来读取和操作相应程序中的数据
+* 创建自己的内容提供器给程序的数据提供外部访问接口
+
+如果一个应用程序通过内容提供器对其数据提供了外部访问接口，那么任何其他应用程序就都可以使用这部分数据进行访问。Android中自带的电话薄、短信、媒体等程序都提供了类似的访问接口，这就使得第三方应用程序可以充分地利用这部分数据来实现更好的功能。
+
+#### ContentResolver的基本用法
+
+*如果一个应用程序想访问内容提供器中共享的数据，就一定要借助ContentResolver类。*
+
+ContentResolver提供了一系列方法用于对数据进行CRUD操作，ContentResolver中的增删改查方法**不接收表名**，而是**用Uri代替**，该参数称为URI，对数据建立唯一标识符，主要有两部分构成：
+* authority : 用于区分不同程序
+* path ： 对同一应用程序中的不同表做区分，通常会添加到authority后面。
+
+URI内容最标准的写法<协议名://authority/path>：
+```
+content://com.example.app.provider/table1
+```
+在得到内容URI字符串后，还需要将他解析成Uri对象才能传入，解析方法为：
+```java
+Uri uri = Uri.parse("content://com.example.app.provider/table1");
+```
+然后查询：
+``` java
+Cursor cursor = getContentResolver().query(
+uri,
+projection,
+selection,
+selectionArgs,
+sortOrder);
+```
+和SQLiteDatabase中的query方法对比：
+
+| query()方法参数 | 对应SQL部分     | 描述
+| :------------- | :------------- | :-------------
+| uri       | from table_name     | 指定查询某个应用程序下的某一张表
+| projection|select column1, column2| 指定查询的列名
+|selection  | where column = value  | 指定where的约束条件
+|selectionArgs |- |为where重的占位符提供具体的值
+|orderBy|order by column1, column2 | 指定查询结果的排序方式
+
+查询完成后返回的时一个Cursor对象，逐个读取：
+
+```java
+if(cursor != null){
+    while(cursor.moveToNext()){
+        String column1 = cursor.getString(cursor.getColumnIndex("column1"));
+        int column2 = cursor.getInt(cursor.getColumnIndex("column2"));
+    }
+}
+```
+
+增加数据：
+
+```java
+ContentValues values = new ContentValues();
+values.put("column1", "text");
+values.put("column2", 1);
+getContentResolver().insert(uri, values);
+```
+
+更新数据：
+
+```java
+ContentValues values = new ContentValues();
+values.put("column1", "");
+getContentResolver().update(uri,  
+                            values,
+                            "column1 = ? and colmun2 = ?",
+                            new String[]{"text", "1"});
+```
+
+删除：
+
+```java
+getContentResolver().delete(uri, "column1 = ? , new String[]{"text"});
+```
+
+#### 创建自己的内容提供器：
+
+###### 创建内容提供器的步骤
+方式：新建一个类去继承ContentProvider，实现里面的方法，就是对外提供的接口实现。
+
+除了标准的URI之外，还要一种后面带一个id
+```String
+content://com.example.app.provider/table1/1
+```
+表示期望访问的是com.example.app.provider这哥应用的table1中id为1的数据。**以路径结尾表示要访问表中的所有数据，以id访问表示期望表中拥有相应id的数据**，可以使用通配符的方式来分配这两种格式内容URI:
+
+- *:表示匹配任意长度的任意字符
+- #：表示匹配任意长度的数字
+
+一个能够匹配任意表内容的URI:
+```String
+content://com.example.app.provider/*
+```
+一个能够匹配table1表中任意一行数据内容URI：
+```String
+content://com.example.app.provider/table1/#
+```
+
+可以借助URIMatch这个类轻松匹配内容URI的功能。
+
+```java
+public class MyProvider extends ContentProvider {
+
+    public static final int TABLE1_DIR = 0;
+    public static final int TABLE1_ITEM = 1;
+    public static final int TABLE2_DIR = 2;
+    public static final int TABLE2_ITEM = 3;
+
+    private static UriMatcher uriMatcher;
+
+    static {
+        uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        uriMatcher.addURI("com.example.runtimepermissiontest.provider",
+                "table1", TABLE1_DIR);
+        uriMatcher.addURI("com.example.runtimepermissiontest.provider",
+                "table1", TABLE1_ITEM);
+        uriMatcher.addURI("com.example.runtimepermissiontest.provider",
+                "table2", TABLE2_DIR);
+        uriMatcher.addURI("com.example.runtimepermissiontest.provider",
+                "table2", TABLE2_ITEM);
+    }
+
+    /**
+     * 当ContentResolver尝试访问当前程序数据时，内容提供器被初始化，此时会调用该函数
+     * 通常在这里完成度数据库的创建和升级操作
+     * 返回true表示内容提供器初始化成功，返回false表示失败
+     */
+    @Override
+    public boolean onCreate() {
+        return false;
+    }
 
 
+    @Override
+    public Cursor query( Uri uri,  String[] projection, String selection,  String[] selectionArgs,  String sortOrder) {
+        switch (uriMatcher.match(uri)){
+            case TABLE1_DIR:
+                // 查询table1中的内容
+                break;
+            case TABLE1_ITEM:
+                //查询table1中的单条内容
+                break;
+            case TABLE2_DIR:
+                // 查询table2中的内容
+                break;
+            case TABLE2_ITEM:
+                // 查询table2中的单条内容
+                break;
+            default:
+                break;
+        }
+        return null;
+    }
 
+    /**
+     * 根据传入的内容URI来返回相应的MIME类型
+     * 是一种固定格式
+     */
+    @Override
+    public String getType(Uri uri) {
+        switch (uriMatcher.match(uri)){
+            case TABLE1_DIR:
+                return "vnd.android.cursor.dir/vnd.com.example.runtimepermissiontest.provider.table1";
+            case TABLE1_ITEM:
+                return "vnd.android.cursor.item/vnd.com.example.runtimepermissiontest.provider.table1";
+            case TABLE2_DIR:
+                return "vnd.android.cursor.dir/vnd.com.example.runtimepermissiontest.provider.table2";
+            case TABLE2_ITEM:
+                return "vnd.android.cursor.item/vnd.com.example.runtimepermissiontest.provider.table2";
+            default:
+                break;
+        }
+        return null;
+    }
 
+    @Override
+    public Uri insert( Uri uri,  ContentValues values) {
+        return null;
+    }
 
+    @Override
+    public int delete( Uri uri,  String selection,  String[] selectionArgs) {
+        return 0;
+    }
 
+    @Override
+    public int update( Uri uri, ContentValues values,  String selection, String[] selectionArgs) {
+        return 0;
+    }
+}
+```
+
+> 关于getTypoe()方法用于获取Uri对象所对应的MIME类型：
+* 一个内容URI所对应的MIME字符串主要由3部分组成
+* 必须以 vnd 开头
+* 如果内容URI以路径结尾，则后接android.cursor.dir/，如果内容URI以id结尾，则后接android.cursor.item/。
+* 最后接上 vnd.<authority\>.<path\>
 
 
 # 四、Service
