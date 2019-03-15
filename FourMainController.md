@@ -231,7 +231,7 @@ content://com.example.app.provider/table1/1
 ```
 表示期望访问的是com.example.app.provider这哥应用的table1中id为1的数据。**以路径结尾表示要访问表中的所有数据，以id访问表示期望表中拥有相应id的数据**，可以使用通配符的方式来分配这两种格式内容URI:
 
-- *:表示匹配任意长度的任意字符
+- *：表示匹配任意长度的任意字符
 - #：表示匹配任意长度的数字
 
 一个能够匹配任意表内容的URI:
@@ -345,3 +345,190 @@ public class MyProvider extends ContentProvider {
 
 
 # 四、Service
+> 服务是android中实现程序后台运行的解决方案
+* 适合执行不需要和用户交互而且还要求长期运行的任务
+* 服务不依赖于任何用户界面，及时程序被切换到后台，或者用户开启另外一个应用程序，服务仍然可以正常运行。
+* 服务并不运行在一个独立的进程中，而是依赖于创建服务时所在的应用程序进程。当某个应用程序被杀掉时，所有依赖于该进程的服务也会停掉。
+* 服务不会开启线程，默认运行在主线程当中。
+
+### android中的线程
+Android程序中的主线程用于加载UI，所以也叫UI线程，在其他子线程中不能更改UI，否则会报错，有下面几个原则：
+* 决不能在UI Thread当中进行耗时操作，不能阻塞UI Thread
+* 不能在UI Thread之外的线程当中操作UI元素
+
+##### 异步处理机制-线程池、消息队列
+异步消息处理主要会用到四个组件：
+* Message :线程之间传递的消息，内部携带少量信息，用于在不同线程之间交换数据，包含以下几个字段
+    * what：
+    * arg1：携带整型数据
+    * arg2：携带整型数据
+    * obj：携带一个Object对象（地址？）
+* Handler：发送和处理消息，使用Handler的sendMessage()方法，发出的消息通过一系列处理后，最终会回到该对象的handleMessage()方法中。（也就是，每个任务有一个该对象的实例，不同handler对象有自己的上下文，有状态变量）
+* MessageQueue :消息队列，主要用于存放所有通过Handler发送的消息。**每个线程中只会有一个MessageQueue对象**
+* Looper：调用loop()方法后，轮询Message，如果有就取出来，通过dispatchMessage()分发给Handler处理（上面说，每个线程只有一个MessageQueue对象，所以在一个线程中，实例化多个handler对象，sendMessage()后的消息都在同一个消息队列中，所以这里从取出消息到把消息分发给Handler过程中是有一个路由的过程的）
+![示意图](./imgs/NOSync.png)
+
+然后最后指定调用的时候，已经进入到了主线程。
+
+``` java
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+    public static final int UPDATE_TEXT = 1;
+
+    private TextView textView = null;
+
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case UPDATE_TEXT:
+                    textView.setText("nice !");
+                    break;
+                    default:
+                        break;
+            }
+        }
+    };
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        textView = findViewById(R.id.text_view);
+        Button button = findViewById(R.id.btn_change_textview_content);
+        button.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.btn_change_textview_content:
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Message message = new Message();
+                        message.what = UPDATE_TEXT;
+                        System.out.println("send message");
+                        handler.sendMessage(message);
+                        System.out.println("send message done");
+                        try {
+                            Thread.sleep(3000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        System.out.println("sleep done");
+                    }
+                }).start();
+                break;
+            default:
+                break;
+        }
+    }
+}
+```
+通过验证可以看出，是异步执行的，在handler.sendMessage(message);方法执行后，当前线程直接返回。源码里面有一处是更改的message对象的属性
+
+```java
+private boolean enqueueMessage(MessageQueue queue, Message msg, long uptimeMillis) {
+    msg.target = this;// 后面从这里可以找到发送消息的对象，从而找到对应的处理逻辑
+    if (mAsynchronous) {
+        msg.setAsynchronous(true);
+    }
+    return queue.enqueueMessage(msg, uptimeMillis);
+}
+```
+##### 异步任务框架AsyncTask
+> 使用方式：AsyncTask是一个抽象类，所以使用时创建一个子类继承它，在继承时，可以指定三个泛型参数：
+* **params** :在执行AsyncTask时需要传入的参数，可用于后台任务中使用
+* **Progress** :后台执行任务时，如果需要在界面上显示当前进度，则使用这个泛型指定的泛型为进度单位。
+* **Result** : 当任务执行完毕后，如果需要对结果进行返回，则使用这里指定的泛型作为返回值类型。
+
+创建方式：
+```java
+public class DownloadTask extends AsyncTask<Void, Integer, Boolean> {
+
+    //这个方法会在后台任务开始执行之前调用，用于进行一些界面上的初始化操作，比如显示一个进度条对话框
+    @Override
+    protected void onPreExecute() { super.onPreExecute(); }
+
+    //该方法中的所有代码都在子线程中执行，应该在这里处理所有的耗时任务,一旦完成任务，可以通过return返回执行结果，
+    @Override// 这个方法不能进行UI操作,如果需要，可以调用publishProgress(Prosess...)方法完成
+    protected Boolean doInBackground(Void... voids) {return null;}
+    //当后台任务中调用了publishProgress(Progress...)方法后，还方法会被调用，参数就是后台任务传递过来的，可以对UI进行操作。
+    @Override
+    protected void onProgressUpdate(Integer... values) { super.onProgressUpdate(values); }
+    //当后台任务执行完毕并通过return语句进行返回时，这个方法就会很快得到调用，返回的数据作为参数传递到此方法中，可以利用返回的数据来进行
+    // 一些UI操作
+    @Override
+    protected void onPostExecute(Boolean aBoolean) {super.onPostExecute(aBoolean);  }
+    @Override
+    protected void onCancelled(Boolean aBoolean) { super.onCancelled(aBoolean); }
+
+    @Override
+    protected void onCancelled() {super.onCancelled(); }
+}
+```
+### 服务的基本用法
+1. 首先定义一个服务，通过继承Service抽象类。
+2. 启动和停止服务，主要是借助Intent来实现。
+```java
+case R.id.btn_start_service:
+        Intent startIntent = new Intent(this, MyService.class);
+        startService(startIntent);
+        break;
+case R.id.btn_stop_service:
+        Intent stopIntent = new Intent(this, MyService.class);
+        stopService(stopIntent);
+        break;
+```
+(都是Intent(this, ...class)，活动的切换也是这样)
+
+##### 活动和服务进行通信
+让活动和服务关系更加紧密，例如在活动中指挥服务干什么。借助onBind()方法。
+1. 在该方法中，返回一个IBinder类子类的实例，而这个子类的实例定义在服务中。
+```java
+    class DownloadBinder extends Binder{
+        public void startDownload(){
+            Log.d("MyService", "startDownload");
+        }
+
+        public int getProgress(){
+            Log.d("MyService", "getProgress");
+            return 0;
+        }
+    }
+    @Override
+    public IBinder onBind(Intent intent) {
+        return mBinder;
+    }
+```
+2. 在活动中创建ServiceConnection的实例，要求实现两个方法：
+```java
+private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            downloadBinder = (MyService.DownloadBinder) service;
+            downloadBinder.startDownload();
+            downloadBinder.getProgress();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+```
+
+3. 在onServiceConnected方法中，可以取出IBinder的实例，并通过该实例调用方法。
+4. 链接到一起：
+```java
+Intent bindIntent = new Intent(this, MyService.class);
+                bindService(bindIntent, connection, BIND_AUTO_CREATE); //绑定服务
+                break;
+ ```
+
+ **任何一个服务在整个程序范围内都是通用的，即MyService不仅可以和MainActivity绑定，还可以和热河一个其他活动绑定，并且绑定后，都可以获得相同的DownloadBuinder实例**
+
+### 服务的生命周期
+
+1. 任何位置调用了Context的startService()方法被调用，
