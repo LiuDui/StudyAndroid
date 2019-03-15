@@ -437,6 +437,8 @@ private boolean enqueueMessage(MessageQueue queue, Message msg, long uptimeMilli
     return queue.enqueueMessage(msg, uptimeMillis);
 }
 ```
+
+
 ##### 异步任务框架AsyncTask
 > 使用方式：AsyncTask是一个抽象类，所以使用时创建一个子类继承它，在继承时，可以指定三个泛型参数：
 * **params** :在执行AsyncTask时需要传入的参数，可用于后台任务中使用
@@ -531,4 +533,7 @@ Intent bindIntent = new Intent(this, MyService.class);
 
 ### 服务的生命周期
 
-1. 任何位置调用了Context的startService()方法被调用，
+1. 任何位置调用了Context的startService()方法，相应的服务就会启动起来，并回调onCreatCommand()方法。如果这个服务之前没有被创建过，onCreate()方法会先于onStartCommand()方法执行。服务启动后会一直保持运行状态，知道stopService()方法或stopSelf()方法被调用。虽然每调用一次startService()，onStartCommand()就会被执行一次，但是实际上每个服务都只会存在一个实例。所以无论调用多少次startService()方法，只需要调用一次stopService()或stopSelf()方法，服务就会停止。
+2. 还可以调用Context的bindService()方法来获取一个服务的持久连接，这时就会回调服务中的onBind()方法。如果服务没有被创建过，还是会优先调用onCreate()方法，再调用onCreate()方法。之后，调用方可以捕获到onBind()方法中返回的IBinder对象的实例，这样就能自由地和服务通信了。
+3. 调用了startService()方法后，再调用stopService()方法，这时服务中的onDestroy()方法就会被执行，表示服务被撤销了。类似的，调用bindService()后，又调用unbindService()，服务也会被撤销。
+**一个服务只要被启动或者被绑定后，就会一直处于运行状态，必须要让以上两个条件同时不满足，服务才能销毁**，所以如果两种启动方式对同一个服务调用，那么关闭时，也要调用两个关闭方法。
