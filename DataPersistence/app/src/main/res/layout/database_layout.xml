@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DatabaseActivity">
+
+    <LinearLayout
+        android:layout_width="395dp"
+        android:layout_height="715dp"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp">
+        <Button
+            android:id="@+id/btn_database_create"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Create Database"/>
+
+        <Button
+            android:id="@+id/btn_database_addvalue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="add value to Database"/>
+
+        <Button
+            android:id="@+id/btn_database_updatevalue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="update value to Database"/>
+
+        <Button
+            android:id="@+id/btn_database_queryevalue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="query value to Database"/>
+
+
+        <Button
+            android:id="@+id/btn_database_del_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="delete value to Database"/>
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

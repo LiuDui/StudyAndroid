@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DatabaseActivityByLite">
+
+    <LinearLayout
+        android:layout_width="395dp"
+        android:layout_height="715dp"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp">
+        <Button
+            android:id="@+id/btn_database_create_lite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Create Database lite"/>
+
+        <Button
+            android:id="@+id/btn_database_addvalue_lite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="add value to Database lite" />
+
+        <Button
+            android:id="@+id/btn_database_updatevalue_lite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="update value to Database lite"/>
+
+        <Button
+            android:id="@+id/btn_database_queryevalue_lite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="query value to Database lite"/>
+
+
+        <Button
+            android:id="@+id/btn_database_del_value_lite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="delete value to Database lite"/>
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
