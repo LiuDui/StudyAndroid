@@ -425,3 +425,21 @@ book.updateAll("name = ? and author = ?", "海边的卡发卡", "村上春树");
 book.setToDefault("price");
               book.updateAll();
 ```
+
+#### 删除数据
+```java
+LitePal.deleteAll(Book.class, "pages > ?", "100");
+```
+
+#### 查询
+```java
+btnDatabaseQueryValue.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+        List<Book> books = LitePal.findAll(Book.class);
+        for (int i = 0; i < books.size(); i++) {
+            Log.d("DatabaseLite SQL", books.get(i).toString());
+        }
+    }
+});
+```
