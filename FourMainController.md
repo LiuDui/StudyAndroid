@@ -1,5 +1,5 @@
 # 一、Activity
-
+Activity表示具有用户界面的单一屏幕。每个Activity都独立于其他Activity单独存在。
 # 二、Brodcast
 Android提供的一套完整的API，允许应用程序发送和接受系统或其他应用的广播消息。感觉就是进程间通信的一种机制。
 
@@ -345,6 +345,7 @@ public class MyProvider extends ContentProvider {
 
 
 # 四、Service
+
 > 服务是android中实现程序后台运行的解决方案
 * 适合执行不需要和用户交互而且还要求长期运行的任务
 * 服务不依赖于任何用户界面，及时程序被切换到后台，或者用户开启另外一个应用程序，服务仍然可以正常运行。
