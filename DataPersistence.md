@@ -337,3 +337,91 @@ implementation 'org.litepal.android:java:3.0.0'
 保证该框架的正常工作。
 
 #### 创建和升级数据库
+```xml
+<litepal>
+    <dbname value = "BookStore" ></dbname>
+    <version value = "2" ></version>
+
+    <list>
+        <mapping class="com.example.datapersistence.dao.entity.Book"></mapping>
+    </list>
+</litepal>
+```
+写一个实体类，配置进去，这个配置文件就包含了该库的信息（BookStore version:2）、表的信息（list里面的一个类对应一个表）,直接代码：
+```java
+LitePal.getDatabase();  
+```
+就会触发找表过程，没有就就创建，假如有，还会保留原来的数据。
+
+升级：在book类直接加一个字段可更改book表；增加一个类，添加到list中，增加一个表。然后在配置文件中，版本号加1，直接调用上面的方法，每次调用都会触发操作。
+
+注：数据库的版本号，在读取时要保持一致，当在LitePal中更新了数据库版本号，再使用MyDatabaseHelper对数据库进行操作时，需要更改MyDatabaseHelper配置参数里面的版本号。
+
+#### 增加数据
+LitePal进行表管理时不需要模型类有任何继承结构，但是进行CURD操作时就不行了，必须要继承自LitePalSupport类才行。
+
+数据的约束可以用注解：
+
+```java
+public class Album extends LitePalSupport {
+    @Column(unique = true, defaultValue = "unknown")
+    private String name;
+    private float price;
+    private byte[] cover;
+    private List<Song> songs = new ArrayList<Song>();
+    // generated getters and setters.
+    ...
+}
+```
+
+1. 创建模型类的实例，数据设置好
+2. sava()
+
+```java
+btnDatabaseAddValue.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               Book book = new Book();
+               book.setName("海边的卡发卡");
+               book.setAuthor("村上春树");
+               book.setPages(352);
+               book.setPress("---");
+               book.setPrice(30);
+
+               book.save();
+           }
+});
+```
+
+#### 更新数据
+1. 对已经存储的对象：
+```java
+btnDatabaseUpdateValue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Book book = new Book();
+                book.setName("海边的卡发卡");
+                book.setAuthor("村上春树");
+                book.setPages(352);
+                book.setPress("---");
+                book.setPrice(30);
+                book.save();
+
+                book.setPress("UnKnow");
+                book.save();
+            }
+        });
+```
+2. 另一种
+```java
+Book book = new Book();
+book.setPress("清华出版社");
+book.setName("海边的卡夫卡");
+book.updateAll("name = ? and author = ?", "海边的卡发卡", "村上春树");
+```
+
+设置成默认值：使用
+```java
+book.setToDefault("price");
+              book.updateAll();
+```
