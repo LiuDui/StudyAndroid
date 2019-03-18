@@ -1,6 +1,6 @@
 # 应用基础知识
 
-### 基础知识
+## 基础知识
 
 > android应用
 * Android是一种多用户的Linux操作系统，其中每个应用都是一个不同的用户
@@ -18,14 +18,14 @@ Android设计独特之处在于，任何应用都可以启动其他应用的组�
 
 当系统启动某个组件时，会启动该应用的进程（如果尚未运行），并实例化该组件所需的类。 例如，如果您的应用启动相机应用中拍摄照片的 Activity，则该 Activity 会在属于相机应用的进程，而不是您的应用的进程中运行。因此，与大多数其他系统上的应用不同，**Android 应用并没有单一入口点（例如，没有 main() 函数）**。
 
-#### 启动组件
+### 启动组件
 每种类型的组件有不同的启动方法：
 * 可以通过将 Intent 传递到 startActivity() 或 startActivityForResult()（当您想让 Activity 返回结果时）来启动 Activity（或为其安排新任务）。
 * 可以通过将　Intent 传递到 startService() 来启动服务（或对执行中的服务下达新指令）。 或者，您也可以通过将 Intent 传递到 bindService() 来绑定到该服务。
 * 可以通过将 Intent 传递到 sendBroadcast()、sendOrderedBroadcast() 或 sendStickyBroadcast() 等方法来发起广播；
 * 可以通过在 ContentResolver 上调用 query() 来对内容提供程序执行查询。
 
-#### 清单文件 AndroidManifest.xml
+### 清单文件 AndroidManifest.xml
 Android在启动应用组件前，系统必须读取应用的AndroidManifest.xml文件确认组件存在。应用必须在此文件中声名其所有组件，该文件必须位于应用项目的根目录中。
 
 > 清单文件的其他作用
@@ -35,7 +35,7 @@ Android在启动应用组件前，系统必须读取应用的AndroidManifest.xml
 * 应用需要连接的API库（Android框架API除外），如Doogle地图库
 * 其他功能
 
-###### 声名组件
+#### 声名组件
 > 在资源清单文件中：
 * Activity 的 <activity\> 元素
 * 服务的 <service\> 元素
@@ -44,14 +44,15 @@ Android在启动应用组件前，系统必须读取应用的AndroidManifest.xml
 
 广播接收器可以在代码中动态创建，并注册，但其他组件，如果不在清单文件中声名，则不会运行。
 
-###### 声名组件功能（！！！ intent的隐式作用就是这个了）
+#### 声名组件功能（！！！ intent的隐式作用就是这个了）
 > 系统通过将接收到的 Intent 与设备上的其他应用的清单文件中提供的 Intent 过滤器进行比较来确定可以响应 Intent 的组件。
 
 在清单文件中的intent过滤器中声名，就是在对外拦截消息。
 
-#### 应用资源
+### 应用资源
 对于Android中的每一项资源，SDK构建工具都会唯一ID，通过此ID可以对资源进行引用。
 
 源代码于资源分离，优点在于针对不同设备配备备用资源。
 
-### 资源文件
+## 应用资源
+> 始终外部化资源   单独维护  为特定设备配置提供别用资源（分组到专门命名的资源目录中）
