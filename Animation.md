@@ -447,9 +447,48 @@ mButton.startAnimation(setAnimation);
 // 步骤5:播放动画
 ```
 
-##### 具体使用应用场景
-###### 标准的动画效果
+##### 监听动画
+Animation类通过监听动画开始、结束、重复时刻来进行一系列操作，通过java代码里的setAnimationListener()方法设置。
+```java
+rotateAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {    }
+            @Override
+            public void onAnimationEnd(Animation animation) {  }
 
+            @Override
+            public void onAnimationRepeat(Animation animation) {   }
+        });
+```
+
+##### 具体应用场景
+###### 标准的动画效果
+* 补间动画常用于视图View的标准动画效果：平移、旋转、缩放、透明度
+* 其他特殊应用场景
+  * Activity的切换效果    
+
+```java
+  Intent intent = new Intent (this,Acvtivity.class);
+startActivity(intent);
+overridePendingTransition(R.anim.enter_anim,R.anim.exit_anim);
+// 采用overridePendingTransition（int enterAnim, int exitAnim）进行设置
+// enterAnim：从Activity a跳转到Activity b，进入b时的动画效果资源ID
+// exitAnim：从Activity a跳转到Activity b，离开a时的动画效果资源Id
+// overridePendingTransition（）必须要在startActivity(intent)后被调用才能生效
+
+// 系统内置动画
+Intent intent = new Intent(MainActivity.this, SecActivity.class);
+                startActivity(intent);
+                // 淡入淡出的动画效果      
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+
+               // 从左向右滑动的效果
+               overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+
+
+```
+  * Framement切换效果
+  * 视图组中子元素的出场效果
 
 #### 逐帧动画
 

@@ -1,6 +1,5 @@
 package com.example.downloadservicetest;
 
-import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -11,6 +10,7 @@ import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
@@ -18,6 +18,10 @@ import java.io.File;
 public class DownloadService extends Service {
     private DownloadTask downloadTask;
     private String downloadUrl;
+
+    // 先把服务和活动绑定
+    Binder mBinder = new DownloadBinder();
+
 
     private DownloadListenner listenner = new DownloadListenner() {
         @Override
@@ -77,11 +81,11 @@ public class DownloadService extends Service {
         return (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     }
 
-    // 先把服务和活动绑定
 
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        Log.d("download_test before", "bind is null");
+        return mBinder;
     }
 
     class DownloadBinder extends Binder{
