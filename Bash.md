@@ -119,5 +119,4 @@ this is a name is a name
 [aurora@localhost ~]$ echo ${anothername}
 ${name} is a name
 ```
-
-
+当前bash就是一个进程，在该进程中定义的变量，如果想在子进程中使用，那么用export命令。
