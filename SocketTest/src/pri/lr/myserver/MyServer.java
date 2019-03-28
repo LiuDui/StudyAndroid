@@ -27,19 +27,19 @@ public class MyServer {
     public boolean start(){
         if (listening == true){
             if (!serverSocketInstence.isClosed()){
-                MyLogger.log(TAG, "重复开启serversocket");
+                MyLogger.log(TAG, "The serverSocket is opened");
                 return true;
             }
         }
         listening = true;
         while (listening){
-            MyLogger.log(TAG, "阻塞侦听...");
+            MyLogger.log(TAG, "start accepting...");
             try {
                 Socket socket = serverSocketInstence.accept();
-                MyLogger.log(TAG, "接收来自IP:" + socket.getInetAddress().toString() + "，端口:" + socket.getPort() + "的连接");
+                MyLogger.log(TAG, "accept IP:" + socket.getInetAddress().toString() + ", Port:" + socket.getPort());
                 socketManger.addSocket(socket);
             } catch (IOException e) {
-                MyLogger.log(TAG, "监听新连接出错");
+                MyLogger.log(TAG, "accept wrong");
                 if (listening == true){
                     //TODO 重启
                 }

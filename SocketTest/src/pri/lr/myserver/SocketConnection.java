@@ -44,7 +44,6 @@ public class SocketConnection implements Runnable{
             byte[] commandBuffer = new byte[commandLen];
             inputStream.read(commandBuffer);
             String line = new String(commandBuffer, "utf-8");
-            System.out.println("11111111111" + line);
             CommandUtil commandUtil = CommandUtil.parseCommand(line);
 
             byte[] buffer = new byte[BUFF_SIZE];
@@ -73,7 +72,7 @@ public class SocketConnection implements Runnable{
                 }
 
                 inputStream.read(strByte, times * BUFF_SIZE, last);
-                System.out.println(new String(strByte, "utf-8"));
+                MyLogger.log(TAG, "recive message from " + socket.getInetAddress() + ": " + new String(strByte, "utf-8"));
             }
         } catch (IOException e) {
             e.printStackTrace();

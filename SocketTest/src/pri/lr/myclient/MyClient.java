@@ -89,16 +89,45 @@ public class MyClient implements Runnable{
         if(CommandUtil.MOD_FILE.equals(commandUtil.getMod())){
             // 这是文件处理
             if(CommandUtil.METHOD_GET.equals(commandUtil.getMethod())){
-
+                getFile(commandUtil);
             }else if(CommandUtil.METHOD_PUT.equals(commandUtil.getMethod())){
-
+                putFile(commandUtil);
             }else{
                 MyLogger.log(TAG, "mod can not deal in <dispatchTask>");
             }
         }else{
-            // 是字符串处理
-            sendMessage(commandUtil);
+            sendMessage(commandUtil);   // 消息发送
         }
+
+    }
+
+    public void getFile(CommandUtil commandUtil){
+
+    }
+
+    // commandUtil中仅仅保存着filepath
+    public void putFile(CommandUtil commandUtil){
+        String filePath = commandUtil.getFileName();
+        File theFile = new File(filePath);
+
+        if(!theFile.exists()) {
+            MyLogger.log(TAG, "the file" + theFile.getName() + "is not exists!");
+            return;
+        }
+        MyLogger.log(TAG, "the file" + theFile.getName() + "is found");
+
+        // has find file, then create command
+        try {
+            byte[] commandyte  = commandUtil.setFileName(theFile.getName()).setdataLength((int) theFile.length()).create().getBytes("utf-8");
+            socketOutputStream.writeInt(commandyte.length);
+            socketOutputStream.write(commandyte);
+            System.out.println("TODO");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
     }
 
@@ -107,8 +136,10 @@ public class MyClient implements Runnable{
         try {
             byte[] messageBytes = message.getBytes("utf-8");
             commandUtil.setdataLength(messageBytes.length);
-            String commd = commandUtil.create();
-            socketOutputStream.writeInt(commd.length());
+            byte[] commdByte = commandUtil.create().getBytes("utf-8");
+
+            socketOutputStream.writeInt(commdByte.length);
+            socketOutputStream.write(commdByte);
             socketOutputStream.write(messageBytes);
             MyLogger.log(TAG, "send message" + commandUtil.toString());
         } catch (UnsupportedEncodingException e) {
@@ -136,7 +167,6 @@ public class MyClient implements Runnable{
     }
 
     public void putFile(String filePath) {
-
         CommandUtil commandUtil = CommandUtil.prepareCommand()
                 .setMethod(CommandUtil.METHOD_PUT)
                 .setMod(CommandUtil.MOD_FILE)

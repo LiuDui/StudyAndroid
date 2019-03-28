@@ -14,8 +14,10 @@ public class MyClientDemo {
     public static void main(String[] args) throws IOException {
         MyClient myClient = new MyClient(new Socket(NetConfig.IP, NetConfig.PORT)); // 创建一个客户端
         myClient.startWork();
-        // 三种请求，都是先生成command,放起来，然后再慢慢处理
-        myClient.sendMessage("this is a message"); //
+
+        myClient.sendMessage("this is a message");
+
+
 //        myClient.putFile(filePath);
 //        myClient.getFile("test.txt"); // 从服务器取一个文件,放到本地
 

@@ -22,7 +22,6 @@ public class CommandUtil {
     private String fileName; // 可选项
     private long dataLength;
 
-    private File file;
     private String message;
 
     public static CommandUtil parseCommand(String command){
@@ -33,10 +32,10 @@ public class CommandUtil {
         commandUtil.setMod(cmds[1]);
         if (commandUtil.isFile()){
             commandUtil.setFileName(cmds[2]);
+            commandUtil.setdataLength(Integer.parseInt(cmds[3]));
         }else{
-            commandUtil.setMessage(cmds[2]);
+            commandUtil.setdataLength(Integer.parseInt(cmds[2]));
         }
-        commandUtil.setdataLength(Integer.parseInt(cmds[3]));
         MyLogger.log(TAG, "parseComman:" + commandUtil.toString());
         return commandUtil;
     }
@@ -110,15 +109,6 @@ public class CommandUtil {
 
     public CommandUtil setdataLength(int dataLength) {
         this.dataLength = dataLength;
-        return this;
-    }
-
-    public File getFile() {
-        return file;
-    }
-
-    public CommandUtil setFile(File file) {
-        this.file = file;
         return this;
     }
 
