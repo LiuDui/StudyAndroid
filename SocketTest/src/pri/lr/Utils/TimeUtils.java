@@ -7,7 +7,7 @@ import java.util.Date;
 
 public class TimeUtils {
 
-    private static SimpleDateFormat dataFormatInLog = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss:SSS");
+    private static SimpleDateFormat dataFormatInLog = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
 
     public static String getLogTime(){
         return dataFormatInLog.format(new Date());

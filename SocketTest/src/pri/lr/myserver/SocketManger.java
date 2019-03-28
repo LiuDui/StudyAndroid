@@ -28,6 +28,10 @@ public class SocketManger {
             // 2. 重复的添加
         }
         NetInfo netInfo = new NetInfo(socket.getInetAddress().toString(), socket.getPort());
+        SocketConnection connection = new SocketConnection(socket);
+
+        socketsHolder.put(netInfo, connection);
+        connection.startCommunication();
         //TODO
 //        if (socketsHolder.get());
         return false;
