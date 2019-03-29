@@ -27,19 +27,19 @@ public class MyServer {
     public boolean start(){
         if (listening == true){
             if (!serverSocketInstence.isClosed()){
-                MyLogger.log(TAG, "The serverSocket is opened");
+                MyLogger.logError(TAG, "The serverSocket is opened");
                 return true;
             }
         }
         listening = true;
         while (listening){
-            MyLogger.log(TAG, "start accepting...");
+            MyLogger.logInfo(TAG, "start accepting...");
             try {
                 Socket socket = serverSocketInstence.accept();
-                MyLogger.log(TAG, "accept IP:" + socket.getInetAddress().toString() + ", Port:" + socket.getPort());
+                MyLogger.logInfo(TAG, "accept IP:" + socket.getInetAddress().toString() + ", Port:" + socket.getPort());
                 socketManger.addSocket(socket);
             } catch (IOException e) {
-                MyLogger.log(TAG, "accept wrong");
+                MyLogger.logException(TAG, "accept wrong");
                 if (listening == true){
                     //TODO 重启
                 }

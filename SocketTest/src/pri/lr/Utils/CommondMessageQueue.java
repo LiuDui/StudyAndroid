@@ -1,5 +1,6 @@
 package pri.lr.Utils;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -14,6 +15,8 @@ public class CommondMessageQueue<T> {
     private Condition notEmpty = lock.newCondition();
     private Condition notFull = lock.newCondition();
 
+    public volatile AtomicBoolean refuse = new AtomicBoolean(false);
+
     int DEFAULT_SIZE = 10;
     int MAX_SIZE = Integer.MAX_VALUE;
 
@@ -27,6 +30,9 @@ public class CommondMessageQueue<T> {
 
 
     public void add(T t) throws InterruptedException {
+        if(refuse.get()){
+            return;
+        }
         lock.lock();
         try {
             while (count == messages.length)
@@ -54,6 +60,14 @@ public class CommondMessageQueue<T> {
         } finally {
             lock.unlock();
         }
+    }
+
+    public boolean isEmpty(){
+        return count == 0;
+    }
+
+    public void refuseAll(){
+        refuse.set(true);
     }
 }
 

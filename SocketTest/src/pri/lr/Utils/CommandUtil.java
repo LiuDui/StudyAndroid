@@ -36,7 +36,7 @@ public class CommandUtil {
         }else{
             commandUtil.setdataLength(Integer.parseInt(cmds[2]));
         }
-        MyLogger.log(TAG, "parseComman:" + commandUtil.toString());
+        MyLogger.logInfo(TAG, "parseComman:" + commandUtil.toString());
         return commandUtil;
     }
 
@@ -49,12 +49,12 @@ public class CommandUtil {
 
     public String create(){
         if (this.method == null){
-            MyLogger.log(TAG, "创建command时未传入方法名");
+            MyLogger.logError(TAG, "创建command时未传入方法名");
             return null;
         }
 
         if (this.mod == null){
-            MyLogger.log(TAG, "创建command时未传入mod");
+            MyLogger.logError(TAG, "创建command时未传入mod");
             return null;
         }
 
@@ -64,14 +64,14 @@ public class CommandUtil {
             command = this.method + seprater + this.mod + seprater + String.valueOf(this.dataLength);
         }else if(MOD_FILE.equals(this.mod)){
             if (this.fileName == null){
-                MyLogger.log(TAG, "创建文件传输command时未传入文件名，无法进行解析");  // 这里抛异常更合适
+                MyLogger.logError(TAG, "创建文件传输command时未传入文件名，无法进行解析");  // 这里抛异常更合适
                 return null;
             }
             command =  this.method + seprater + this.mod + seprater + this.fileName + seprater +  String.valueOf(this.dataLength);
         }else {
-            MyLogger.log(TAG, "创建command时mod未知，无法进行解析");  // 这里抛异常更合适
+            MyLogger.logError(TAG, "创建command时mod未知，无法进行解析");  // 这里抛异常更合适
         }
-        MyLogger.log(TAG, "create command:" + this.toString());
+        MyLogger.logInfo(TAG, "create command:" + this.toString());
         return command;
     }
 
