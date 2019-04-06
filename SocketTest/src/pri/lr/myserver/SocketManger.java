@@ -1,6 +1,7 @@
 package pri.lr.myserver;
 
-import java.io.IOException;
+import pri.lr.abandon.SocketConnection;
+
 import java.net.Socket;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -8,7 +9,7 @@ import java.util.Map;
 public class SocketManger {
     private static String TAG = "SocketManger";
 
-    private Map<NetInfo, SocketConnection> socketsHolder;
+    private Map<NetInfo, SocketConnect> socketsHolder;
 
     public SocketManger() {
         this.socketsHolder = new LinkedHashMap<>();
@@ -28,6 +29,10 @@ public class SocketManger {
             // 2. 重复的添加
         }
         NetInfo netInfo = new NetInfo(socket.getInetAddress().toString(), socket.getPort());
+        SocketConnect connection = new SocketConnect(socket);
+
+        socketsHolder.put(netInfo, connection);
+        connection.startWork();
         //TODO
 //        if (socketsHolder.get());
         return false;
@@ -43,10 +48,7 @@ public class SocketManger {
 
     public void removeAndCloseAll() {
         socketsHolder.forEach((k,v)->{
-            if (!v.isClosed()){
-                //TODO
-                v.close(); // 这里还应该关闭他的输入流，输出流，如果一个cocket的工作顺利完成后，在哪个线程中就能直接关闭
-            }
+
         });
     }
 }

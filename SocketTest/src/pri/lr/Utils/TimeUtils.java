@@ -3,14 +3,16 @@ package pri.lr.Utils;
 import javafx.scene.input.DataFormat;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class TimeUtils {
 
-    private static SimpleDateFormat dataFormatInLog = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss:SSS");
+    private static final DateTimeFormatter dataFormatInLog = DateTimeFormatter.ofPattern("yyyy-mm-dd HH:mm:ss");
 
     public static String getLogTime(){
-        return dataFormatInLog.format(new Date());
+        return dataFormatInLog.format(LocalDateTime.now());
     }
 
 }

@@ -19,26 +19,27 @@ public class MyServer {
 
     private boolean listening = false;
 
-    public MyServer(int port) throws IOException {
+    public MyServer(int port, SocketManger socketManger) throws IOException {
         serverSocketInstence = new ServerSocket(port);
+        this.socketManger = socketManger;
     }
 
     public boolean start(){
         if (listening == true){
             if (!serverSocketInstence.isClosed()){
-                MyLogger.log(TAG, "重复开启serversocket");
+                MyLogger.logError(TAG, "The serverSocket is opened");
                 return true;
             }
         }
         listening = true;
-        MyLogger.log(TAG, "开始监听连接");
         while (listening){
+            MyLogger.logInfo(TAG, "start accepting...");
             try {
                 Socket socket = serverSocketInstence.accept();
-                MyLogger.log(TAG, "接收来自IP:" + socket.getInetAddress().toString() + "，端口:" + socket.getPort() + "的连接");
+                MyLogger.logInfo(TAG, "accept IP:" + socket.getInetAddress().toString() + ", Port:" + socket.getPort());
                 socketManger.addSocket(socket);
             } catch (IOException e) {
-                MyLogger.log(TAG, "监听新连接出错");
+                MyLogger.logException(TAG, "accept wrong");
                 if (listening == true){
                     //TODO 重启
                 }
@@ -62,6 +63,7 @@ public class MyServer {
             //TODO 抛异常
             return;
         }
+        System.out.println(socketManger);
         this.socketManger = socketManger;
     }
 
@@ -76,7 +78,7 @@ public class MyServer {
     }
 
     public void clear(){
-        SocketManger.removeAndCloseAll();
+        socketManger.removeAndCloseAll();
     }
 
 

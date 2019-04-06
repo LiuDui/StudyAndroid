@@ -9,7 +9,7 @@ public class MyServerDemo {
         MyServer myServer = null;
 
         try {
-            myServer = new MyServer(NetConfig.PORT);
+            myServer = new MyServer(NetConfig.PORT, new SocketManger());
             myServer.start();
         } catch (IOException e) {
             e.printStackTrace();
