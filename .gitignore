@@ -13,3 +13,5 @@
 /captures
 .externalNativeBuild
 *.pdf
+/test/*
+/androidTest/*
