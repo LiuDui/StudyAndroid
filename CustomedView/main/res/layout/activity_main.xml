@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+<!--xmlns:custom="http://schemas.android.com/apk/res/com.example.customedview" -->
+
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:>-->
+
+                <!--&lt;!&ndash;<com.example.customedview.views.CustomTitleView&ndash;&gt;-->
+                    <!--&lt;!&ndash;android:layout_width="200dp"&ndash;&gt;-->
+                    <!--&lt;!&ndash;android:layout_height="100dp"&ndash;&gt;-->
+                    <!--&lt;!&ndash;app:titleText="3712"&ndash;&gt;-->
+                    <!--&lt;!&ndash;app:titleTextColor="#ff0000"&ndash;&gt;-->
+                    <!--&lt;!&ndash;app:titleTextSize="40sp"/>&ndash;&gt;-->
+            <!--/>-->
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btn_to_titleview_activity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="title view"
+                    android:textAllCaps="false"/>
+
+                <Button
+                    android:id="@+id/btn_to_imgtitleview_activity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="img title view"
+                    android:textAllCaps="false"/>
+
+                <Button
+                    android:id="@+id/btn_to_roundturnround_activity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="弧形等待"
+                    android:textAllCaps="false"/>
+
+            </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
